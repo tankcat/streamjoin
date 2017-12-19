@@ -79,7 +79,7 @@ public class Tools_optimal {
 	
 	public static void print_need(Vector<Old_New_Relation_optimal> relationList_optimal) {
 		// TODO Auto-generated method stub
-		System.out.println("====================此处打印需求信息===========================");
+		//System.out.println("====================此处打印需求信息===========================");
 		for(int i=0;i<relationList_optimal.size();i++){
 			int i_old1=relationList_optimal.get(i).getI_old();
 			int j_old1=relationList_optimal.get(i).getJ_old();
@@ -87,16 +87,16 @@ public class Tools_optimal {
 			int j_new1=relationList_optimal.get(i).getJ_new();
 			
 			for(int j=0;j<relationList_optimal.get(i).getR_need_list().size();j++){
-				System.out.println("旧节点： ["+i_old1+","+j_old1+"] 即是新节点：["+i_new1+","+j_new1+"] 还需要Ｒ　"+
+				/*System.out.println("旧节点： ["+i_old1+","+j_old1+"] 即是新节点：["+i_new1+","+j_new1+"] 还需要Ｒ　"+
 						relationList_optimal.get(i).getR_need_list().get(j).getBegin()+" -> "+
 						relationList_optimal.get(i).getR_need_list().get(j).getEnd()
-						);
+						);*/
 			}
 			for(int k=0;k<Para.relationList_optimal.get(i).getS_need_list().size();k++){
-				System.out.println("旧节点： ["+i_old1+","+j_old1+"] 即是新节点：["+i_new1+","+j_new1+"] 还需要S "+
+				/*System.out.println("旧节点： ["+i_old1+","+j_old1+"] 即是新节点：["+i_new1+","+j_new1+"] 还需要S "+
 						relationList_optimal.get(i).getS_need_list().get(k).getBegin()+" -> "+
 						relationList_optimal.get(i).getS_need_list().get(k).getEnd()
-						);
+						);*/
 			}
 		}
 	}

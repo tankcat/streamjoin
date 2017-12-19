@@ -28,7 +28,7 @@ public class LoadBalanceTopologyMFM {
 		builder.setSpout(lineitemID, new SpoutMFM(SystemParameters.host,SystemParameters.port,"orders",initialMatrix,joinerID),1);
 		
 		builder.setBolt(controllerID, new ControllerMFM(SystemParameters.host,SystemParameters.port,15,joinerID,1)).directGrouping(joinerID, Systemparameters.ThetaJoinerSignal);
-		builder.setBolt(joinerID,new JoinMFM(SystemParameters.host,SystemParameters.port,controllerID,joinerID),50)
+		builder.setBolt(joinerID,new JoinMFM(SystemParameters.host,SystemParameters.port,controllerID,joinerID),40)
 											   .directGrouping(lineitemID,Systemparameters.ThetaControllerSignal)
 											   .directGrouping(lineitemID, Systemparameters.DATA_STREAM)
 											   .directGrouping(controllerID,Systemparameters.ThetaControllerSignal)
@@ -44,7 +44,7 @@ public class LoadBalanceTopologyMFM {
 		if(args.length==0){
 			LocalCluster cluster=new LocalCluster();
 			cluster.submitTopology("tolologymfm", conf, builder.createTopology());
-			Utils.sleep(1000000000);
+			Utils.sleep(1000000);
 			cluster.killTopology("tolologymfm");
 			cluster.shutdown();
 		}else{

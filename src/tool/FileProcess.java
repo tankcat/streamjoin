@@ -9,13 +9,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+
 
 public class FileProcess implements Serializable{
 	
@@ -102,9 +96,11 @@ public class FileProcess implements Serializable{
 		Jedis jedis= new Jedis(SystemParameters.host,SystemParameters.port);
 		String line=reader.readLine();
 		System.out.println("开始读取并写入Redis:"+fileName);
-		while(line != null && !line.equals("")){
+		int count=0;
+		while(line != null && !line.equals("") && count<500000){
 			jedis.lpush("orders",line);
 			line=reader.readLine();
+			count++;
 		}
 		FileProcess.close(reader);
 		System.out.println("读写结束！");

@@ -10,7 +10,7 @@ public class Do_optimal {
 		
 		double r_v; double s_v;
 		
-		System.out.println(lack_r_or_s+": "+last_num);
+		//System.out.println(lack_r_or_s+": "+last_num);
 		
 		switch (lack_r_or_s) {
 		case "col":// 行    为 primary 在列上存  最后
@@ -43,7 +43,7 @@ public class Do_optimal {
 				for(int j=0;j<ns_col;j++){
 					oldnodes[i][j] = new old_Node_optimal();
 					oldnodes[i][j].setActivity(false);
-					System.out.println("jinlaila"+ i +" : "+(mr_row-1));
+					//System.out.println("jinlaila"+ i +" : "+(mr_row-1));
 					if(i == (mr_row-1)){//不正常的行和列
 						if(last_num ==0){continue;}
 						last_num--;
@@ -114,7 +114,7 @@ public class Do_optimal {
 	
 		double thecost = primary*(another_num)+(aid-aid_surplus)*(num)+aid_surplus*the_lack_num;
 		
-		System.out.println(thecost+"=========================================");
+		//ln(thecost+"=========================================");
 		
 		int node_num = 0 ;
 		if(aid_surplus !=0){node_num = num*(another_num-1)+the_lack_num;}
@@ -170,7 +170,7 @@ public class Do_optimal {
         double r_range; double s_range;
         int old_row_num = Para.oldnodes_optimal.length;
         int old_col_num = Para.oldnodes_optimal[0].length;
-		System.out.println(lack_row_or_col+": "+last_num);
+		//System.out.println(lack_row_or_col+": "+last_num);
 			r_range = (double)(1)/new_row_num; s_range = (double)(1)/new_col_num;
 			//=================================================写入R
 			if(new_row_num>old_row_num){//如果新节点的行数多于旧节点
@@ -199,7 +199,7 @@ public class Do_optimal {
 							r_list_remain.add(be1);
 							}
 						else{//琐碎的聚合进来
-							System.out.println("进来处理琐碎的了！！！");
+							//System.out.println("进来处理琐碎的了！！！");
 							Vector<Begin_End> r_list_this_put = new Vector<Begin_End>();
 							double countrange=0;							
 							for(int lnum=0;lnum<r_list_remain.size();lnum++){
@@ -219,13 +219,13 @@ public class Do_optimal {
 										double sub_sub_range = r_range-countrange;//还要用多少
 										be_put.setBegin(begin);
 										be_put.setEnd(begin+sub_sub_range);
-										System.out.println(countrange+" : "+r_range+" : "+sub_sub_range+" :  "+be_put.getBegin()+"-"+be_put.getEnd()+"   "+
-												sub_be_remain.getBegin()+"-"+sub_be_remain.getEnd());
+										/*System.out.println(countrange+" : "+r_range+" : "+sub_sub_range+" :  "+be_put.getBegin()+"-"+be_put.getEnd()+"   "+
+												sub_be_remain.getBegin()+"-"+sub_be_remain.getEnd());*/
 										sub_be_remain.setBegin(begin+sub_sub_range);
 										sub_be_remain.setEnd(end);
 										countrange+=sub_sub_range;
-										System.out.println(countrange+" : "+r_range+" : "+sub_sub_range+" :  "+be_put.getBegin()+"-"+be_put.getEnd()+"   "+
-												sub_be_remain.getBegin()+"-"+sub_be_remain.getEnd());
+										/*System.out.println(countrange+" : "+r_range+" : "+sub_sub_range+" :  "+be_put.getBegin()+"-"+be_put.getEnd()+"   "+
+												sub_be_remain.getBegin()+"-"+sub_be_remain.getEnd());*/
 									}
 									r_list_this_put.add(be_put);
 									r_list_remain.remove(0);
@@ -242,7 +242,7 @@ public class Do_optimal {
 			else{//如果新节点的行少于旧节点
 				int new_r_num = new_row_num;
 				for(int i=0;i<old_row_num;i++){
-					 System.out.println("old_r_num: "+new_r_num);
+					 //System.out.println("old_r_num: "+new_r_num);
 				 if(new_r_num>0){//起点等于旧节点
 					 new_r_num--;
 					Begin_End be1 = new Begin_End();
@@ -260,20 +260,20 @@ public class Do_optimal {
 					}
 					}
 					else{//琐碎的聚合进来-->把old剩下节点分到新节点
-						System.out.println("进来处理琐碎的了！！！");
+						//System.out.println("进来处理琐碎的了！！！");
 						
 						double this_old_begin_r = Para.oldnodes_optimal[i][0].getR_begin();
 						double this_old_end_r = Para.oldnodes_optimal[i][0].getR_end();
 						double new_shold_r = (double)(1)/new_row_num;
 						
-						System.out.println("this begin and end: "+this_old_begin_r+"-"+this_old_end_r);
+						//System.out.println("this begin and end: "+this_old_begin_r+"-"+this_old_end_r);
 						boolean mark = true;
 						 
 							for(int row_num=0;row_num<new_row_num;row_num++){
 								if(mark){
 									double old_r_had = this_old_end_r - this_old_begin_r;
 								
-								System.out.println(row_num+"-"+this_old_begin_r+"-"+this_old_end_r);
+								//System.out.println(row_num+"-"+this_old_begin_r+"-"+this_old_end_r);
 								//计算该行的节点已有多少R
 								double new_r_had = 0;
 								for(int rr=0;rr<newnodes_optimal[row_num][0].getR_list().size();rr++){
@@ -281,7 +281,7 @@ public class Do_optimal {
 									double thisend = newnodes_optimal[row_num][0].getR_list().get(rr).getEnd();
 									new_r_had+=(thisend-thisbegin);}
 								
-								System.out.println("======="+row_num+"new_r_had-"+new_r_had);
+								//System.out.println("======="+row_num+"new_r_had-"+new_r_had);
 								if(new_r_had<new_shold_r){
 									Begin_End be = new Begin_End();
 									if((new_r_had+old_r_had)<new_shold_r){
@@ -375,7 +375,7 @@ public class Do_optimal {
 			else{//如果新节点的列数少于就节点
 				int new_s_num = new_col_num;
 				for(int j=0;j<old_col_num;j++){
-					 System.out.println("old_r_num: "+new_s_num);
+					 //System.out.println("old_r_num: "+new_s_num);
 				 if(new_s_num>0){//起点等于旧节点
 					 new_s_num--;
 					Begin_End be1 = new Begin_End();
@@ -393,7 +393,7 @@ public class Do_optimal {
 					}
 					}
 					else{//琐碎的聚合进来-->把old剩下节点分到新节点
-						System.out.println("进来处理琐碎的了！！！");
+						//System.out.println("进来处理琐碎的了！！！");
 						
 						double this_old_begin_s = Para.oldnodes_optimal[0][j].getS_begin();
 						double this_old_end_s = Para.oldnodes_optimal[0][j].getS_end();

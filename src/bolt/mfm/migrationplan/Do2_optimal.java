@@ -130,16 +130,16 @@ public class Do2_optimal {
 		clean_relation_list(Para.relationList_optimal);
 		add_no_relation(Para.relationList_optimal,oldnodes_optimal,newnodes_optimal);
 		
-		System.out.println("println the after clean: ");
+		//System.out.println("println the after clean: ");
 		for(int i=0;i<Para.relationList_optimal.size();i++){
-			System.out.println(i+" : "+
+			/*System.out.println(i+" : "+
 		            Para.relationList_optimal.get(i).getI_old()+" "+
 					Para.relationList_optimal.get(i).getJ_old()+" "+
 					Para.relationList_optimal.get(i).getI_new()+" "+
 					Para.relationList_optimal.get(i).getJ_new()+" "+
 					Para.relationList_optimal.get(i).getR_re()+" "+
 					Para.relationList_optimal.get(i).getS_re()+" "+
-					Para.relationList_optimal.get(i).getAll_re());
+					Para.relationList_optimal.get(i).getAll_re());*/
 		}
 	}
 

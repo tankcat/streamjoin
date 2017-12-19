@@ -1,7 +1,6 @@
 package bolt.mfm;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,7 +13,6 @@ import java.util.Vector;
 
 import bolt.mfm.migrationplan.*;
 import tool.FileProcess;
-import tool.SystemParameters;
 import util.mfm.TupleProperties;
 import util.mfm.ExperimentInfo;
 import util.mfm.Mapping;
@@ -106,7 +104,7 @@ public class ControllerMFM extends BaseRichBolt {
 			if(inputStream.equals(Systemparameters.ThetaJoinerSignal)){
 				String signal=tupleRecv.getStringByField(TupleProperties.MESSAGE);
 				if(signal.equals(Systemparameters.DataMigrationEnded)){
-					System.out.println("收到节点迁移结束信号");
+					//System.out.println("收到节点迁移结束信号");
 					processMigrationEnded(tupleRecv);
 				}else if(signal.equals(Systemparameters.DtatMigrationFinalize)){
 					processMigrationFinalize();
@@ -115,7 +113,7 @@ public class ControllerMFM extends BaseRichBolt {
 					//收到的信息是|R|-|S|
 					String[] cardinality=signal.split("-");
 					int taskIndex=taskPhysicalIDs.indexOf(tupleRecv.getSourceTask());
-					System.out.println("controller收到"+taskIndex+"号汇报的负载");
+					//System.out.println("controller收到"+taskIndex+"号汇报的负载");
 					getStatisitics(Double.parseDouble(cardinality[0]),Double.parseDouble(cardinality[1]),taskIndex);
 					if(currentNumberOfReportedJoiners==rowJoiner.size()+colJoiner.size()){
 						currentNumberOfReportedJoiners=0;
@@ -124,25 +122,28 @@ public class ControllerMFM extends BaseRichBolt {
 						k++;
 						jedis=this.getConnectedJedis();
 						System.out.println(k+"\t\t"+(totalFirstRelation/curRow)+"\t\t"+(totalSecondRelation/curCol)+"\t\t"+load+"\t\t"+Para.V);
-						//jedis.lpush("statistics", k+"\t\t"+(totalFirstRelation/curRow)+"\t\t"+(totalSecondRelation/curCol)+"\t\t"+load+"\t\t"+Para.V);
+						jedis.lpush("statistics", k+"\t\t"+(totalFirstRelation/curRow)+"\t\t"+(totalSecondRelation/curCol)+"\t\t"+load+"\t\t"+Para.V);
 						if(load>Para.V*0.8){
 							//jedis.lpush("statistics", k+"\t\t"+(totalFirstRelation/curRow)+"\t\t"+(totalSecondRelation/curCol)+"\t\t"+load+"\t\t"+Para.V);
 							Para.newR=totalFirstRelation;
 							Para.newS=totalSecondRelation;
 							ctrlState=state.DATAMIGRATION;
 							long beginTime=System.currentTimeMillis();
-							Do_optimal.get_row_col(Para.oldR,Para.oldS,Para.V);
+							if(curEpochNumber==0)
+								Do_optimal.get_row_col(Para.oldR,Para.oldS,Para.V);
+							else
+								Do_optimal.get_row_col(Para.oldR,Para.oldS,(int)(Para.V*0.6));
 							Para.oldnodes_optimal = new old_Node_optimal[Para.mr_row][Para.ns_col];
 							Do_optimal.initialize_nodes(Para.oldnodes_optimal,Para.oldR,Para.oldS,Para.mr_row,Para.ns_col,Para.last_num,Para.lack_row_or_col, Para.V);
 							
 							oldMap=getOldMapping();
 							
-							Do_optimal.get_row_col(Para.newR,Para.newS,Para.V);
+							Do_optimal.get_row_col(Para.newR,Para.newS,(int)(Para.V*0.6));
 							
 							boolean isUpRight=(Para.lack_row_or_col.equals("col")?true:false);
 							
 							Para.newnodes_optimal = new new_Node_optimal[Para.mr_row][Para.ns_col];
-							Do_optimal.initialize_new_nodes(Para.newnodes_optimal,Para.newR,Para.newS,Para.mr_row,Para.ns_col,Para.last_num,Para.lack_row_or_col, Para.V);
+							Do_optimal.initialize_new_nodes(Para.newnodes_optimal,Para.newR,Para.newS,Para.mr_row,Para.ns_col,Para.last_num,Para.lack_row_or_col, (int)(Para.V*0.6));
 							
 							Do2_optimal.make_map(Para.oldnodes_optimal,Para.newnodes_optimal);
 							
@@ -150,8 +151,7 @@ public class ControllerMFM extends BaseRichBolt {
 							
 							long endTime=System.currentTimeMillis();
 							Do4.Merge_migration_plan(Para.migrationList);
-							
-							
+
 							long gap=endTime-beginTime;
 				
 							//获得行数和列数
@@ -211,7 +211,7 @@ public class ControllerMFM extends BaseRichBolt {
 								}
 								plan.put(targetIndex, mInfo);
 							}
-							bw=FileProcess.getWriter("Experiment/plan"+curEpochNumber+".txt");
+							//bw=FileProcess.getWriter("Experiment/plan"+curEpochNumber+".txt");
 							recordPlanToFiles(bw,plan);
 							getMigrateToSet(Para.migrationList);
 							ExperimentInfo ei=new ExperimentInfo(gap,totalFirstRelation,totalSecondRelation,usedJoinerNumber);
@@ -236,6 +236,7 @@ public class ControllerMFM extends BaseRichBolt {
 
 	private void recordPlanToFiles(BufferedWriter bw,Map<Integer,MigrationInfo> plan){
 		Iterator<Map.Entry<Integer, MigrationInfo>> iter = plan.entrySet().iterator();
+
 		while (iter.hasNext()) {
 			Map.Entry<Integer, MigrationInfo> item = iter.next();
 			item.getValue().selfindex=item.getKey();
@@ -244,7 +245,8 @@ public class ControllerMFM extends BaseRichBolt {
 			for (Map.Entry<Integer, Double[]> migInfoItem : migInfo.entrySet()) {
 				double R=(migInfoItem.getValue()[0]==null?0.0:migInfoItem.getValue()[0]);
 				double S=(migInfoItem.getValue()[1]==null?0.0:migInfoItem.getValue()[1]);
-				FileProcess.write(item.getKey() + " " + migInfoItem.getKey() + " " + R + " " + S, bw);
+				jedis.lpush("plan_items"+curEpochNumber,item.getKey() + " " + migInfoItem.getKey() + " " + R + " " + S);
+				//FileProcess.write(item.getKey() + " " + migInfoItem.getKey() + " " + R + " " + S, bw);
 			}
 		}
 		FileProcess.close(bw);
@@ -345,7 +347,8 @@ public class ControllerMFM extends BaseRichBolt {
 				jedis.del("plan".getBytes());
 			if(jedis.exists("migTo".getBytes()))
 				jedis.del("migTo".getBytes());
-			//System.out.println("���е�JoinerǨ�����");
+			/*if(jedis.exists("plan_items"))
+				jedis.del("plan_items");*/
 		}
 	}
 	
@@ -359,24 +362,24 @@ public class ControllerMFM extends BaseRichBolt {
 	}
 
 	private void writeNewSchemeToJedis(Mapping newMap,int row,int col,int discard,boolean isUpRight,Map<Integer,MigrationInfo> plan,ExperimentInfo ei){
-		bw=FileProcess.getWriter("Experiment/matrix"+curEpochNumber+".txt");
+		//bw=FileProcess.getWriter("Experiment/matrix"+curEpochNumber+".txt");
 		jedis=this.getConnectedJedis();
 		String newSchemeInfo=row+" "+col+" "+newMap.nodeCount+" "+discard+" "+(isUpRight==true?1:0);
 		String matrix="";
 		String tmp="";
-		for(int i=0;i<row;i++){
-			for(int j=0;j<col;j++){
-				if(newLogical.containsKey(newMap.index[i][j])){
-					matrix+=newLogical.get(newMap.index[i][j])+" ";
-					tmp+=newLogical.get(newMap.index[i][j])+" ";
-				}else{
-					matrix+=-1+" ";
-					tmp+=-1+" ";
+		for(int i=0;i<row;i++) {
+			for (int j = 0; j < col; j++) {
+				if (newLogical.containsKey(newMap.index[i][j])) {
+					matrix += newLogical.get(newMap.index[i][j]) + " ";
+					tmp += newLogical.get(newMap.index[i][j]) + " ";
+				} else {
+					matrix += -1 + " ";
+					tmp += -1 + " ";
 				}
 			}
-			FileProcess.write(tmp,bw);
-			tmp="";
-			matrix+='|';
+			//FileProcess.write(tmp, bw);
+			tmp = "";
+			matrix += '|';
 		}
 		jedis.set("plan".getBytes(), SerializeUtil.serialize(plan));
 		//System.out.println(matrix);
@@ -625,6 +628,6 @@ public class ControllerMFM extends BaseRichBolt {
 				}
 			}
 		}
-		System.out.println(migTo);
+		//System.out.println(migTo);
 	}
 }

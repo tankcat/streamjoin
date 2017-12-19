@@ -7,10 +7,10 @@ import bolt.mfm.migrationplan.new_Node_optimal;
 import bolt.mfm.migrationplan.old_Node_optimal;
 
 public class Para {
-	public static int V=80000;
+	public static int V=250000;
 	
-	public static double oldR = 56495;
-	public static double oldS = 55944;
+	public static double oldR = 20;
+	public static double oldS = 20;
 	public static Node oldnodes[][];
 	public static old_Node_optimal oldnodes_optimal[][];
 	
@@ -20,8 +20,8 @@ public class Para {
 	public static String lack_row_or_col="";
 	public static int last_num = 0;
 		
-	public static double newR = 115020;
-	public static double newS = 114747;
+	public static double newR = 0;
+	public static double newS = 0;
 	public static Node newnodes[][];
 	public static new_Node_optimal newnodes_optimal[][];
 	

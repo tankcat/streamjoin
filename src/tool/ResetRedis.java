@@ -22,5 +22,10 @@ public class ResetRedis {
         jedis.set("usedJoiner","");
         jedis.del("migTime");
         jedis.del("migVolume");
+        jedis.del("newSchemeInfo");
+        for(int i=0;i<8;i++) {
+            jedis.del("plan_items"+i);
+        }
+        System.out.println("Reset Redis Done!");
     }
 }

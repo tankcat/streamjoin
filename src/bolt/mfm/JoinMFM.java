@@ -114,7 +114,7 @@ public class JoinMFM extends BaseRichBolt {
 		String inputStream=tupleRecv.getSourceStreamId();
 		// 数据来自信号流-控制流
 		if(inputStream.equals(Systemparameters.ThetaControllerSignal)){
-			System.out.println("收到controller信号");
+			//System.out.println("收到controller信号");
 			String message=tupleRecv.getStringByField(TupleProperties.MESSAGE);
 			if(message.equals(Systemparameters.DataMigrationEnded)){
 				processMigrationEnded();
@@ -227,7 +227,7 @@ public class JoinMFM extends BaseRichBolt {
 		 double totalR=R.size()+RSpecial.size()+RTagSpecial.size();
 		 double totalS=S.size()+SSpecial.size()+STagSpecial.size();
 		 String message=totalR+"-"+totalS;
-		 System.out.println(taskIndex+"号joiner汇报"+message);
+		 //System.out.println(taskIndex+"号joiner汇报"+message);
 		 _collector.emitDirect(controllerIndex, Systemparameters.ThetaJoinerSignal,new Values(message));
 	}
 
